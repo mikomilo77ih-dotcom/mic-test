@@ -10,15 +10,11 @@ jobs:
         with:
           fqbn: esp32:esp32:esp32
           sketch-paths: mic_test/mic_test.ino
-          additional-sketch-paths: |
-  - mic_test
-enable-deltas-report: true
           platforms: |
             - name: esp32:esp32
               source-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
-      - name: Upload artifact
+      - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: firmware
-path: |
-  /home/runner/work/mic-test/mic-test/mic_test/build/**/*.bin
+          path: ~/.arduino/cache/**/*.bin
