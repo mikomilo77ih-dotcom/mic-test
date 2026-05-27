@@ -5,16 +5,21 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Build
-        uses: arduino/compile-sketches@v1
-        with:
-          fqbn: esp32:esp32:esp32
-          sketch-paths: mic_test/mic_test.ino
-          platforms: |
-            - name: esp32:esp32
-              source-url: https://espressif.github.io/arduino-esp32/package_esp32_index.json
+      - name: Install Arduino CLI
+        run: |
+          wget -qO arduino-cli.tar.gz https://downloads.arduino.cc/arduino-cli/arduino-cli_latest_Linux_64bit.tar.gz
+          tar -xf arduino-cli.tar.gz
+          sudo mv arduino-cli /usr/local/bin/
+      - name: Install ESP32
+        run: |
+          arduino-cli core update-index --additional-urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
+          arduino-cli core install esp32:esp32 --additional-urls https://espressif.github.io/arduino-esp32/package_esp32_index.json
+      - name: Compile
+        run: |
+          mkdir -p build
+          arduino-cli compile --fqbn esp32:esp32:esp32 mic_test/mic_test.ino --output-dir build/
       - name: Upload
         uses: actions/upload-artifact@v4
         with:
           name: firmware
-          path: ~/.arduino/cache/**/*.bin
+          path: build/*.bin
